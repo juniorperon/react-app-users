@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 
+import axios from 'axios';
 import People from './assets/people.svg';
 import Arrow from './assets/arrow.svg';
 import Trash from './assets/trash.svg';
@@ -21,12 +22,22 @@ function App() {
   const inputName = useRef();
   const inputAge = useRef();
 
-  function addNewUser() {
-    setUsers([...users, { id: Math.random(), name: inputName.current.value, age: inputAge.current.value }])
+  async function addNewUser() {
+
+    // const { data: newUser } = await axios.post("http://localhost:3001/users", {
+    //   name: inputName.current.value,
+    //   age: inputAge.current.value,
+    // });
+
+    // setUsers([...users, newUser ])
+    const { data: newUsers } = await axios.get("http://localhost:3001/users")
+
+    setUsers(newUsers)
+
   }
 
   function deleteUser(userId) {
-    const newUsers = users.filter( user => user.id !== userId)
+    const newUsers = users.filter(user => user.id !== userId)
     setUsers(newUsers)
   }
 
