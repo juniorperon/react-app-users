@@ -1,8 +1,10 @@
 import React, { useState, useRef } from 'react';
+import { useHistory } from 'react-router-dom';
 
-import People from './assets/people.svg';
-import Arrow from './assets/arrow.svg';
-import Trash from './assets/trash.svg';
+import axios from 'axios';
+
+import People from '../../assets/people.svg';
+import Arrow from '../../assets/arrow.svg';
 
 import {
   Container,
@@ -12,22 +14,24 @@ import {
   InputLabel,
   Input,
   Button,
-  User,
 } from './styles';
 
 //JSX
 function App() {
   const [users, setUsers] = useState([]);
+  const history = useHistory();
   const inputName = useRef();
   const inputAge = useRef();
 
-  function addNewUser() {
-    setUsers([...users, { id: Math.random(), name: inputName.current.value, age: inputAge.current.value }])
-  }
+  async function addNewUser() {
+    const { data: newUser } = await axios.post("http://localhost:3001/users", {
+      name: inputName.current.value,
+      age: inputAge.current.value,
+    });
 
-  function deleteUser(userId) {
-    const newUsers = users.filter( user => user.id !== userId)
-    setUsers(newUsers)
+    setUsers([...users,newUser]);
+
+    history.push("/usuarios");
   }
 
   return (
@@ -43,19 +47,9 @@ function App() {
         <InputLabel>Idade</InputLabel>
         <Input ref={inputAge} placeholder="Idade"></Input>
 
-        <Button onClick={addNewUser}>
+        <Button  onClick={addNewUser}>
           Cadastrar<img alt="seta" src={Arrow} />
         </Button>
-
-        <ul>
-          {users.map((user) => (
-            <User key={user.id}>
-              <p>{user.name}</p> <p>{user.age}</p>
-              <button onClick={() => deleteUser(user.id)}><img alt="lata-de-lixo" src={Trash} /></button>
-            </User>
-          ))
-          }
-        </ul>
 
       </ContainerItens>
     </Container>
